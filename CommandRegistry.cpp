@@ -1,5 +1,6 @@
 #include "CommandRegistry.h"
 #include <Windows.h>
+#include "FileHelper.h"
 
 CommandResult Exit(CommandParams args)
 {
@@ -9,7 +10,29 @@ CommandResult Exit(CommandParams args)
 
 CommandResult ListDir(CommandParams args)
 {
-	return {};
+	if (args.size() < 2)
+	{
+		return { L"path required." };
+	}
+	try
+	{
+		CommandResult output = {};
+		std::wstring_view path = args[1];
+
+		DirectoryData data = FileHelper::GetEntries(path);
+		for (const auto& entry : data) 
+		{
+			output.push_back(entry.path());
+		}
+
+		return output;
+
+	}
+	catch (const std::exception& ex)
+	{
+		std::wstring message(ex.what(), ex.what() + std::strlen(ex.what()));
+		return { L"Error", message};
+	}
 }
 
 CommandResult ShowHelp(CommandParams args)

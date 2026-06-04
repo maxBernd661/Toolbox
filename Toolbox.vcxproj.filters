@@ -24,18 +24,33 @@
     <ClCompile Include="CommandRegistry.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="FileHelper.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageStore.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ToolBoxWindow.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Brush.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="TBCommand.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="CommandRegistry.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Brush.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="FIleHelper.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageStore.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Message.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

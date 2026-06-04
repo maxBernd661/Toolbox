@@ -103,6 +103,10 @@ LRESULT ToolBoxWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		OnPaint();
 		return 0;
 
+	case WM_SIZE:
+		OnResize(lParam);
+		return 0;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
@@ -125,7 +129,7 @@ void ToolBoxWindow::OnPaint()
 	SetTextColor(context, RGB(255, 255, 255));
 
 	HFONT font = CreateFont(
-	16, 0, 0, 0,
+	FONT_SIZE, 0, 0, 0,
 	FW_NORMAL,
 	false, false, false,
 	DEFAULT_CHARSET,
@@ -137,11 +141,14 @@ void ToolBoxWindow::OnPaint()
 
 	HFONT oldFont = static_cast<HFONT>(SelectObject(context, font));
 
-	int y = 8;
-	for(const std::wstring& message : messages)
+	std::span<const Message> toDraw = store.Get(availableMessages - 1);
+
+	int y = TOP_BUFFER;
+
+	for (auto& message : toDraw)
 	{
-		TextOut(context, 10, y, message.c_str(), static_cast<int>(message.size()));
-		y += 18;
+		TextOut(context, 10, y, message.Get().c_str(), static_cast<int>(message.Get().size()));
+		y += AFTER_BUFFER;
 	}
 
 	std::wstring curString = L"> " + currentInput + L"_";
@@ -175,6 +182,16 @@ void ToolBoxWindow::OnKeyPress(WPARAM wParam, LPARAM lParam)
 	}
 
 	InvalidateRect(handle, NULL, TRUE);
+}
+
+void ToolBoxWindow::OnResize(LPARAM lParam)
+{
+	int height = HIWORD(lParam);
+	availableMessages = (height - TOP_BUFFER) / (FONT_SIZE + AFTER_BUFFER);
+	if (availableMessages == 0)
+	{
+		availableMessages = 1;
+	}
 }
 
 void ToolBoxWindow::Flush()

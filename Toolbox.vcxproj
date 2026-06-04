@@ -125,12 +125,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CommandRegistry.cpp" />
+    <ClCompile Include="FileHelper.cpp" />
+    <ClCompile Include="MessageStore.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="ToolBoxWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Brush.h" />
     <ClInclude Include="CommandRegistry.h" />
+    <ClInclude Include="FIleHelper.h" />
+    <ClInclude Include="Message.h" />
+    <ClInclude Include="MessageStore.h" />
     <ClInclude Include="TBCommand.h" />
     <ClInclude Include="ToolBoxWindow.h" />
   </ItemGroup>

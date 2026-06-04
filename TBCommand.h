@@ -2,6 +2,9 @@
 #include <string>
 #include <functional>
 #include <span>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 using CommandResult = std::vector<std::wstring>;
 using CommandParams = std::span<const std::wstring>;
