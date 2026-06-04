@@ -44,7 +44,7 @@
     <ClInclude Include="Brush.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="FIleHelper.h">
+    <ClInclude Include="FileHelper.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="MessageStore.h">

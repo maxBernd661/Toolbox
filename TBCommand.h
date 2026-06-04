@@ -1,8 +1,10 @@
 #pragma once
 #include <string>
+#include <string_view>
 #include <functional>
 #include <span>
 #include <filesystem>
+#include <vector>
 
 namespace fs = std::filesystem;
 

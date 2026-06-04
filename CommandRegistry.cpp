@@ -1,6 +1,7 @@
 #include "CommandRegistry.h"
 #include <Windows.h>
 #include "FileHelper.h"
+#include <cstring>
 
 CommandResult Exit(CommandParams args)
 {
@@ -22,7 +23,7 @@ CommandResult ListDir(CommandParams args)
 		DirectoryData data = FileHelper::GetEntries(path);
 		for (const auto& entry : data) 
 		{
-			output.push_back(entry.path());
+			output.push_back(entry.path().wstring());
 		}
 
 		return output;

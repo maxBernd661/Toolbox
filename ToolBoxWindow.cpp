@@ -3,7 +3,6 @@
 #include "Brush.h"
 #include <iostream>
 #include <sstream>
-#include <format>
 
 static std::vector<std::wstring> Split(const std::wstring& str)
 {
@@ -136,7 +135,7 @@ void ToolBoxWindow::OnPaint()
 	OUT_DEFAULT_PRECIS,
 	CLIP_DEFAULT_PRECIS,
 	DEFAULT_QUALITY,
-	FIXED_PITCH || FF_MODERN,
+	FIXED_PITCH | FF_MODERN,
 	L"Consolas");
 
 	HFONT oldFont = static_cast<HFONT>(SelectObject(context, font));
@@ -219,7 +218,7 @@ void ToolBoxWindow::Flush()
 		}
 		if (found == false)
 		{
-			std::wstring errorMessage = std::format(L"unknown command: '{}'. Use help to show available commands", operands[0]);
+			std::wstring errorMessage = L"unknown command: '" + operands[0] + L"'. Use help to show available commands";
 			messages.push_back(errorMessage);
 		}
 
