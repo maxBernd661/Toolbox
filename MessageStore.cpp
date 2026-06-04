@@ -1,4 +1,5 @@
 #include "MessageStore.h"
+#include <algorithm>
 
 void MessageStore::AddUser(const std::wstring_view message)
 {

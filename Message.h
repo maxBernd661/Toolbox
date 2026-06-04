@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <format>
+#include <string_view>
 
 enum class MessageType
 {
@@ -9,7 +9,7 @@ enum class MessageType
 	Pipe = 2
 };
 
-std::wstring_view ToString(MessageType type)
+inline std::wstring_view ToString(MessageType type)
 {
 	switch(type)
 	{
@@ -28,13 +28,16 @@ class Message
 {
 public:
 
-	Message(const std::wstring& data, MessageType type) : data(data), type(type)
+	Message(std::wstring_view data, MessageType type) : data(data), type(type)
 	{
 	}
 
 	std::wstring Get() const
 	{
-		return std::format(L"{} {}",ToString(type), data);
+		std::wstring result(ToString(type));
+		result += L" ";
+		result += data;
+		return result;
 	}
 
 private:
