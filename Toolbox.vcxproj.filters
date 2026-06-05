@@ -30,6 +30,9 @@
     <ClCompile Include="MessageStore.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="DefaultConsoleTool.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ToolBoxWindow.h">
@@ -51,6 +54,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Message.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Tool.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultConsoleTool.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CommandRegistry.cpp" />
+    <ClCompile Include="DefaultConsoleTool.cpp" />
     <ClCompile Include="FileHelper.cpp" />
     <ClCompile Include="MessageStore.cpp" />
     <ClCompile Include="Program.cpp" />
@@ -136,10 +137,12 @@
   <ItemGroup>
     <ClInclude Include="Brush.h" />
     <ClInclude Include="CommandRegistry.h" />
+    <ClInclude Include="DefaultConsoleTool.h" />
     <ClInclude Include="FileHelper.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageStore.h" />
     <ClInclude Include="TBCommand.h" />
+    <ClInclude Include="Tool.h" />
     <ClInclude Include="ToolBoxWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

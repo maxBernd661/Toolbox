@@ -17,7 +17,7 @@ public:
 
 	}
 
-	const std::vector<TBCommand>& GetCommands() const
+	[[nodiscard]] const std::vector<TBCommand>& GetCommands() const
 	{
 		return commands;
 	}

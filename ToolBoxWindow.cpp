@@ -1,26 +1,15 @@
 #include "ToolBoxWindow.h"
 #include "CommandRegistry.h"
 #include "Brush.h"
+#include "DefaultConsoleTool.h"
+
 #include <iostream>
-#include <sstream>
-
-static std::vector<std::wstring> Split(const std::wstring& str)
-{
-	std::vector<std::wstring> result;
-	std::wstringstream stream(str);
-
-	std::wstring part;
-	while (stream >> part)
-	{
-		result.push_back(part);
-	}
-
-	return result;
-}
 
 bool ToolBoxWindow::Create()
 {
 	CommandRegistry::Instance().Build();
+
+	activeTool = std::make_unique<DefaultConsoleTool>();
 
 	instance = GetModuleHandle(nullptr);
 	className = L"ToolBoxClass";
@@ -38,8 +27,8 @@ bool ToolBoxWindow::Create()
 		L"ToolBox",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		instance,
 		this
 	);
@@ -47,7 +36,7 @@ bool ToolBoxWindow::Create()
 	return handle != nullptr;
 }
 
-void ToolBoxWindow::Show()
+void ToolBoxWindow::Show() const
 {
 	ShowWindow(handle, SW_SHOW);
 }
@@ -55,7 +44,7 @@ void ToolBoxWindow::Show()
 int ToolBoxWindow::HandleMessages()
 {
 	MSG message = {};
-	while (GetMessage(&message, NULL, 0, 0) > 0)
+	while (GetMessage(&message, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&message);
 		DispatchMessage(&message);
@@ -64,13 +53,13 @@ int ToolBoxWindow::HandleMessages()
 	return 0;
 }
 
-LRESULT ToolBoxWindow::StaticWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT ToolBoxWindow::StaticWndProc(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
 	ToolBoxWindow* window = nullptr;
 
 	if (message == WM_NCCREATE)
 	{
-		auto createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
+		const auto createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
 		window = static_cast<ToolBoxWindow*>(createStruct->lpCreateParams);
 
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
@@ -88,146 +77,30 @@ LRESULT ToolBoxWindow::StaticWndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-LRESULT ToolBoxWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT ToolBoxWindow::WndProc(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam) const
 {
 	std::string_view messageName = Translate(message);
-	std::cout << messageName << " (" << message << ")" << std::endl;
-	switch (message)
+	std::cout << messageName << " (" << message << ")" << '\n';
+
+	if (message == WM_DESTROY)
 	{
-	case WM_CHAR:
-		OnKeyPress(wParam, lParam);
-		return 0;
-
-	case WM_PAINT:
-		OnPaint();
-		return 0;
-
-	case WM_SIZE:
-		OnResize(lParam);
-		return 0;
-
-	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
 	}
+
+	if (activeTool)
+	{
+		LRESULT result = 0;
+		if (activeTool->OnMessage(handle, message, wParam, lParam, result))
+		{
+			return result;
+		}
+	}
+
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-void ToolBoxWindow::OnPaint()
-{
-	PAINTSTRUCT ps;
-	HDC context = BeginPaint(handle, &ps);
-
-	RECT rect;
-	GetClientRect(handle, &rect);
-
-	Brush bgBrush(RGB(0, 0, 0));
-	FillRect(context, &ps.rcPaint, bgBrush);
-
-	SetBkMode(context, TRANSPARENT);
-	SetTextColor(context, RGB(255, 255, 255));
-
-	HFONT font = CreateFont(
-	FONT_SIZE, 0, 0, 0,
-	FW_NORMAL,
-	false, false, false,
-	DEFAULT_CHARSET,
-	OUT_DEFAULT_PRECIS,
-	CLIP_DEFAULT_PRECIS,
-	DEFAULT_QUALITY,
-	FIXED_PITCH | FF_MODERN,
-	L"Consolas");
-
-	HFONT oldFont = static_cast<HFONT>(SelectObject(context, font));
-
-	std::span<const Message> toDraw = store.Get(availableMessages - 1);
-
-	int y = TOP_BUFFER;
-
-	for (auto& message : toDraw)
-	{
-		TextOut(context, 10, y, message.Get().c_str(), static_cast<int>(message.Get().size()));
-		y += AFTER_BUFFER;
-	}
-
-	std::wstring curString = L"> " + currentInput + L"_";
-	TextOut(context, 10, y, curString.c_str(), static_cast<int>(curString.size()));
-
-	SelectObject(context, oldFont);
-	DeleteObject(font);
-
-	EndPaint(handle, &ps);
-}
-
-void ToolBoxWindow::OnKeyPress(WPARAM wParam, LPARAM lParam)
-{
-	int keyCode = LOWORD(wParam);
-	int flags = HIWORD(lParam);
-
-	if (keyCode == VK_RETURN)
-	{
-		Flush();
-	}
-	else if(keyCode == VK_BACK)
-	{
-		if (!currentInput.empty())
-		{
-			currentInput.pop_back();
-		}
-	}
-	else
-	{
-		currentInput += static_cast<wchar_t>(wParam);
-	}
-
-	InvalidateRect(handle, NULL, TRUE);
-}
-
-void ToolBoxWindow::OnResize(LPARAM lParam)
-{
-	int height = HIWORD(lParam);
-	availableMessages = (height - TOP_BUFFER) / (FONT_SIZE + AFTER_BUFFER);
-	if (availableMessages == 0)
-	{
-		availableMessages = 1;
-	}
-}
-
-void ToolBoxWindow::Flush()
-{
-	if (!currentInput.empty())
-	{
-		messages.push_back(L"> " + currentInput);
-
-		bool found = false;
-		std::vector<std::wstring> operands = Split(currentInput);
-		for(const TBCommand& command : CommandRegistry::Instance().GetCommands())
-		{
-			std::wstring_view commandName = command.GetName();
-			if (operands[0] == commandName)
-			{
-				found = true;
-				CommandResult result = command.Execute(operands);
-				for (const std::wstring& line : result)
-				{
-					messages.push_back(line);
-				}
-
-				break;
-			}
-		}
-		if (found == false)
-		{
-			std::wstring errorMessage = L"unknown command: '" + operands[0] + L"'. Use help to show available commands";
-			messages.push_back(errorMessage);
-		}
-
-		prevInput.push_back(currentInput);
-		currentInput.clear();
-	}
-}
-
-std::string_view ToolBoxWindow::Translate(UINT message)
+std::string_view ToolBoxWindow::Translate(const UINT message)
 {
 	switch (message)
 	{

@@ -4,7 +4,7 @@
 class Brush
 {
 public:
-	Brush(COLORREF color): handle(CreateSolidBrush(color))
+	Brush(const COLORREF color): handle(CreateSolidBrush(color))
 	{
 	}
 

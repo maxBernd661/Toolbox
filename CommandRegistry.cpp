@@ -1,51 +1,54 @@
 #include "CommandRegistry.h"
 #include <Windows.h>
 #include "FileHelper.h"
-#include <cstring>
 
-CommandResult Exit(CommandParams args)
+namespace
 {
-	PostQuitMessage(0);
-	return {};
-}	
-
-CommandResult ListDir(CommandParams args)
-{
-	if (args.size() < 2)
+	CommandResult Exit(CommandParams args)
 	{
-		return { L"path required." };
+		PostQuitMessage(0);
+		return {};
 	}
-	try
-	{
-		CommandResult output = {};
-		std::wstring_view path = args[1];
 
-		DirectoryData data = FileHelper::GetEntries(path);
-		for (const auto& entry : data) 
+	CommandResult ListDir(const CommandParams args)
+	{
+		if (args.size() < 2)
 		{
-			output.push_back(entry.path().wstring());
+			return { L"path required." };
+		}
+		try
+		{
+			CommandResult output = {};
+			std::wstring_view path = args[1];
+
+			DirectoryData data = FileHelper::GetEntries(path);
+			for (const auto& entry : data)
+			{
+				output.push_back(entry.path().wstring());
+			}
+
+			return output;
+
+		}
+		catch (const std::exception& ex)
+		{
+			std::wstring message(ex.what(), ex.what() + std::strlen(ex.what()));
+			return { L"Error", message };
+		}
+	}
+	
+	CommandResult ShowHelp(CommandParams args)
+	{
+		std::vector<std::wstring> result = { L"available commands:" };
+		for (const TBCommand& command : CommandRegistry::Instance().GetCommands())
+		{
+			result.push_back(command.ToString());
 		}
 
-		return output;
-
-	}
-	catch (const std::exception& ex)
-	{
-		std::wstring message(ex.what(), ex.what() + std::strlen(ex.what()));
-		return { L"Error", message};
+		return result;
 	}
 }
 
-CommandResult ShowHelp(CommandParams args)
-{
-	std::vector<std::wstring> result = { L"available commands:" };
-	for(const TBCommand& command: CommandRegistry::Instance().GetCommands())
-	{
-		result.push_back(command.ToString());
-	}
-
-	return result;
-}
 
 void CommandRegistry::Build()
 {

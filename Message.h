@@ -9,7 +9,7 @@ enum class MessageType
 	Pipe = 2
 };
 
-inline std::wstring_view ToString(MessageType type)
+inline std::wstring_view ToString(const MessageType type)
 {
 	switch(type)
 	{
@@ -18,7 +18,6 @@ inline std::wstring_view ToString(MessageType type)
 	case MessageType::User:
 		return L">";
 	case MessageType::Pipe:
-		return L"~";
 	default:
 		return L"*";
 	}
@@ -28,11 +27,11 @@ class Message
 {
 public:
 
-	Message(std::wstring_view data, MessageType type) : data(data), type(type)
+	Message(const std::wstring_view data, const MessageType type) : data(data), type(type)
 	{
 	}
 
-	std::wstring Get() const
+	[[nodiscard]] std::wstring Get() const
 	{
 		std::wstring result(ToString(type));
 		result += L" ";

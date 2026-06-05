@@ -30,7 +30,7 @@ public:
 		return internalName + L" - " + interalDescription;
 	}
 
-	CommandResult Execute(CommandParams args) const
+	CommandResult Execute(const CommandParams args) const
 	{
 		return internalAction(args);
 	}

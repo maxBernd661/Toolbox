@@ -11,7 +11,7 @@ void MessageStore::AddSystem(const std::wstring_view message)
 	messages.emplace_back(message, MessageType::System);
 }
 
-std::span<const Message> MessageStore::Get(size_t amt)
+std::span<const Message> MessageStore::Get(const size_t amt)
 {
 	const size_t count = std::min(amt, messages.size());
 	
